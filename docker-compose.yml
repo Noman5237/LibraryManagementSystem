@@ -1,0 +1,18 @@
+# docker-compose file
+version: '3'
+
+services:
+  discovery-service:
+    image: amazoncorretto:11
+    volumes:
+      - ./apps/discovery-service/build/libs/discovery-service.jar:/app/discovery-service.jar
+    working_dir: /app
+    command: java -jar discovery-service.jar
+    networks:
+      - lms-network
+    deploy:
+      replicas: 1
+
+networks:
+  lms-network:
+    driver: bridge
