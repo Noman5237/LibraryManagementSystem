@@ -1,9 +1,8 @@
-package com.lms.usermanagementservice;
+package com.lms.usermanagementservice.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+import static javax.persistence.EnumType.STRING;
 
 @Entity
 @Table (name = "user")
@@ -24,4 +23,12 @@ public class User {
 	
 	@Column (nullable = false)
 	private String hashedPassword;
+	
+	@Column (nullable = false)
+	@Enumerated (STRING)
+	private AccountStatus accountStatus;
+	
+	@Column (nullable = false)
+	@Enumerated (STRING)
+	private UserRole userRole;
 }
