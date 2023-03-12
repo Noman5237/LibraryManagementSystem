@@ -3,5 +3,9 @@
   <component name="JpaBuddyIdeaProjectConfig">
     <option name="defaultUnitInitialized" value="true" />
     <option name="renamerInitialized" value="true" />
+    <option name="sourceModelValue" value="Default" />
+    <option name="targetDbValue" value="670aa551-d009-4188-bae2-5ab06b182531" />
+    <option name="updateChangeLogPath" value="apps/user-management-service/src/main/resources/db/migrations/changelog-master.xml" />
+    <option name="updateDbConnectionName" value="670aa551-d009-4188-bae2-5ab06b182531" />
   </component>
 </project>

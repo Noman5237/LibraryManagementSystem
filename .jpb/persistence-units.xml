@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit name="Default" defaultIncludeChangeLogFile="apps/user-management-service/src/main/resources/db/migrations/changelog-master.xml">
+        <packages>
+          <package value="com.lms.usermanagementservice" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
+</project>
