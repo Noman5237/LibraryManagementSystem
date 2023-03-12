@@ -30,6 +30,10 @@ dependencyManagement {
     }
 }
 
+bootJar {
+    archiveName = 'discovery-service.jar'
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
