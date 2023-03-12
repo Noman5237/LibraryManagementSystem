@@ -31,7 +31,7 @@ dependencyManagement {
 }
 
 bootJar {
-    archiveName = 'discovery-service.jar'
+    archiveFileName = "discovery-service.jar"
 }
 
 tasks.named('test') {

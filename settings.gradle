@@ -8,3 +8,12 @@
  */
 
 rootProject.name = 'LMS'
+
+ext.projects = [
+        "apps:discovery-service",
+]
+
+// include all the projects in the projectDirs array
+projects.each { project ->
+    include project
+}
