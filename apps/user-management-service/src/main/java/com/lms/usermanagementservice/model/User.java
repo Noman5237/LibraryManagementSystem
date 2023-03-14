@@ -1,11 +1,20 @@
 package com.lms.usermanagementservice.model;
 
+import lombok.*;
+
 import javax.persistence.*;
+
+import java.util.Date;
 
 import static javax.persistence.EnumType.STRING;
 
 @Entity
-@Table (name = "user")
+@Table (name = "user", schema = "public")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class User {
 	
 	@Id
@@ -19,7 +28,7 @@ public class User {
 	private String lastName;
 	
 	@Column (nullable = false)
-	private String dob;
+	private Date dob;
 	
 	@Column (nullable = false)
 	private String hashedPassword;

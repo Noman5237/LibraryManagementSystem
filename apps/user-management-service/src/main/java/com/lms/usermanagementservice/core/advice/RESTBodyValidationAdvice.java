@@ -1,6 +1,6 @@
-package com.lms.usermanagementservice.core.exception.advice;
+package com.lms.usermanagementservice.core.advice;
 
-import com.lms.usermanagementservice.core.exception.dto.ExceptionResponseDto;
+import com.lms.usermanagementservice.core.dto.ExceptionResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class RESTControllerValidationAdvice {
-	
-	public static final Logger LOGGER = LoggerFactory.getLogger(RESTControllerValidationAdvice.class);
+public class RESTBodyValidationAdvice {
+
+	public static final Logger LOGGER = LoggerFactory.getLogger(RESTBodyValidationAdvice.class);
 	
 	@ExceptionHandler ({MethodArgumentNotValidException.class})
 	@ResponseStatus (HttpStatus.BAD_REQUEST)
@@ -27,6 +27,9 @@ public class RESTControllerValidationAdvice {
 				errors.put(error.getField(), error.getDefaultMessage());
 			}
 		}
-		return new ExceptionResponseDto(null, errors);
+		LOGGER.error("Validation error: {}", errors);
+		return ExceptionResponseDto.builder()
+		                           .errors(errors)
+		                           .build();
 	}
 }

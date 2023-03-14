@@ -1,14 +1,13 @@
 package com.lms.usermanagementservice.dto;
 
-
+import com.lms.usermanagementservice.model.UserRole;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class UserDto {
+public class UserPrincipalDto {
 	
 	private String email;
-	private String firstName;
-	private String lastName;
+	private UserRole userRole;
 }
