@@ -1,5 +1,6 @@
 package com.lms.usermanagementservice;
 
+import com.lms.usermanagementservice.core.exception.RESTException;
 import com.lms.usermanagementservice.dto.*;
 import com.lms.usermanagementservice.model.User;
 import com.lms.usermanagementservice.service.UserActivationService;

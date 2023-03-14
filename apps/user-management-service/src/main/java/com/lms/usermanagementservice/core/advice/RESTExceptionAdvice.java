@@ -11,18 +11,20 @@ import java.util.Map;
 @RestControllerAdvice
 public class RESTExceptionAdvice {
 	
-	@ExceptionHandler ({RESTException.class})
+	@ExceptionHandler (RESTException.class)
 	public ExceptionResponseDto handleRESTException(RESTException exception) {
 		return ExceptionResponseDto.builder()
 		                           .message(exception.getMessage())
-		                           .errors(exception.getPayload()
-		                                            .entrySet()
-		                                            .stream()
-		                                            .collect(HashMap::new,
-		                                                     (map, entry) -> map.put(entry.getKey(),
-		                                                                             entry.getValue()
-		                                                                                  .toString()),
-		                                                     Map::putAll))
+		                           .errors(exception.getPayload() == null ?
+				                                   null : exception.getPayload()
+				                                                   .entrySet()
+				                                                   .stream()
+				                                                   .collect(HashMap::new,
+				                                                            (map, entry) -> map.put(
+						                                                            entry.getKey(),
+						                                                            entry.getValue()
+						                                                                 .toString()),
+				                                                            Map::putAll))
 		                           .build();
 	}
 }

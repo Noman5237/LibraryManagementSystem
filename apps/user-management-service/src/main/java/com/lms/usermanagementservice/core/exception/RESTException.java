@@ -1,11 +1,12 @@
 package com.lms.usermanagementservice.core.exception;
 
 import lombok.Getter;
+import org.springframework.web.client.RestClientException;
 
 import java.util.Map;
 
 @Getter
-public abstract class RESTException extends RuntimeException {
+public abstract class RESTException extends RestClientException {
 	
 	private final Map<String, Object> payload;
 	
