@@ -5,6 +5,8 @@ hosts:
   user-management-service: localhost
 
 spring:
+  application:
+    name: api-gateway
   cloud:
     gateway:
       routes:
