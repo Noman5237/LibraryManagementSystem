@@ -18,6 +18,9 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/migrations/changelog-master.xml
+  cloud:
+    config:
+      enabled: false
 
 eureka:
   client:

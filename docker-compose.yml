@@ -14,6 +14,56 @@ services:
     deploy:
       replicas: 1
 
+  config-service:
+    image: amazoncorretto:11
+    volumes:
+      - ./apps/config-service/build/libs/config-service.jar:/app/config-service.jar
+    working_dir: /app
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery-service:8761/eureka/
+      - CLOUD_CONFIG_GITHUB_TOKEN
+    command: java -jar config-service.jar
+    networks:
+      - lms-network
+    deploy:
+      replicas: 1
+
+  api-gateway:
+    image: amazoncorretto:11
+    volumes:
+      - ./apps/api-gateway/build/libs/api-gateway.jar:/app/api-gateway.jar
+    working_dir: /app
+    environment:
+      - spring.cloud.config.enabled=true
+      - spring.config.import=optional:configserver:http://config-service:8078
+      - spring.profiles.active=dpe
+    command: java -jar api-gateway.jar
+    networks:
+      - lms-network
+    depends_on:
+      - discovery-service
+    deploy:
+      replicas: 1
+
+  user-management-service:
+    image: amazoncorretto:11
+    volumes:
+      - ./apps/user-management-service/build/libs/user-management-service.jar:/app/user-management-service.jar
+    working_dir: /app
+    environment:
+      - spring.cloud.config.enabled=true
+      - spring.config.import=optional:configserver:http://config-service:8078
+      - spring.profiles.active=dpe
+      - USER_MANAGEMENT_SERVICE_DB_NAME
+      - USER_MANAGEMENT_SERVICE_DB_USER
+      - USER_MANAGEMENT_SERVICE_DB_PASSWORD
+    command: java -jar user-management-service.jar
+    networks:
+      - lms-network
+    depends_on:
+      - user-management-service-db
+    deploy:
+      replicas: 1
 
   user-management-service-db:
     image: postgres:${USER_MANAGEMENT_SERVICE_DB_VERSION}
