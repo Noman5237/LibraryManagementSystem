@@ -12,6 +12,7 @@ spring:
           username: ${CLOUD_CONFIG_GITHUB_TOKEN}
           password: ${CLOUD_CONFIG_GITHUB_TOKEN}
           default-label: master
+
 management:
   endpoints:
     web:
