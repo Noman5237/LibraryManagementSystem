@@ -11,6 +11,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/apps" />
+            <option value="$PROJECT_DIR$/apps/api-gateway" />
+            <option value="$PROJECT_DIR$/apps/config-service" />
             <option value="$PROJECT_DIR$/apps/discovery-service" />
             <option value="$PROJECT_DIR$/apps/user-management-service" />
           </set>

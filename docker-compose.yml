@@ -23,6 +23,8 @@ services:
       POSTGRES_PASSWORD: ${USER_MANAGEMENT_SERVICE_DB_PASSWORD}
     volumes:
       - user-management-service-db-data:/var/lib/postgresql/data
+    networks:
+      - lms-network
     ports:
       - "5432:5432"
 

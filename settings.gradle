@@ -11,6 +11,8 @@ rootProject.name = 'LMS'
 
 ext.projects = [
         "apps:discovery-service",
+        "apps:config-service",
+        "apps:api-gateway",
         "apps:user-management-service",
 ]
 
