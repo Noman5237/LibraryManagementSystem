@@ -11,6 +11,7 @@ rootProject.name = 'LMS'
 
 ext.projects = [
         "apps:discovery-service",
+        "apps:user-management-service",
 ]
 
 // include all the projects in the projectDirs array

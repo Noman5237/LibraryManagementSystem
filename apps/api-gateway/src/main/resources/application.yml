@@ -8,6 +8,8 @@ spring:
     gateway:
       routes:
         - id: user-management
+          metadata:
+            docs: /api/docs
           uri: http://localhost:8081
           predicates:
             - Path=/api/user-management/**
