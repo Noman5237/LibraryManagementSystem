@@ -13,3 +13,12 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
+security:
+  jwt:
+    access-token:
+      secret: acess
+      expiration: 180
+    refresh-token:
+      secret: refresh
+      expiration: 360
