@@ -3,6 +3,7 @@ server:
 
 hosts:
   user-management-service: localhost
+  auth-service: localhost
 
 spring:
   application:
@@ -18,6 +19,13 @@ spring:
             - Path=/api/user-management/**
           filters:
             - RewritePath=/api/user-management/?(?<segment>.*), /api/user/$\{segment}
+        - id: authentication-service
+          uri: http://${hosts.auth-service}:8082
+          metadata:
+            public: true
+            docs: /api/docs
+          predicates:
+            - Path=/api/authenticate/**
     config:
       enabled: false
 
