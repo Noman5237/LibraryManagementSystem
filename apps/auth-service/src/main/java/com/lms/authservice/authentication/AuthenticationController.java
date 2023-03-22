@@ -1,6 +1,6 @@
 package com.lms.authservice.authentication;
 
-import com.lms.authservice.dto.TokenDto;
+import com.lms.authservice.dto.TokenPairDto;
 import com.lms.authservice.jwt.JWTService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,12 +18,13 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping ("/")
-	public TokenDto authenticate(@RequestBody AuthenticationDto authenticationDto) {
+	public TokenPairDto authenticate(@RequestBody AuthenticationDto authenticationDto) {
 		String email = authenticationDto.getEmail();
 		if (email.equals("admin") && authenticationDto.getPassword()
 		                                              .equals("admin")) {
-			var token = jwtService.generateRefreshToken(email);
-			return new TokenDto(token);
+			var refreshToken = jwtService.generateRefreshToken(email);
+			var accessToken = jwtService.generateAccessToken(refreshToken);
+			return new TokenPairDto(accessToken, refreshToken);
 		}
 		
 		// FIXME use the generic rest exceptions
@@ -31,10 +32,11 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping ("/refresh")
-	public TokenDto refresh(@RequestBody String refreshToken) {
+	public TokenPairDto refresh(@RequestBody String refreshToken) {
 		if (jwtService.validateRefreshToken(refreshToken)) {
-			var token = jwtService.generateRefreshToken(refreshToken);
-			return new TokenDto(token);
+			var newRefreshToken = jwtService.generateRefreshToken(refreshToken);
+			var accessToken = jwtService.generateAccessToken(newRefreshToken);
+			return new TokenPairDto(newRefreshToken, accessToken);
 		}
 		
 		// FIXME use the generic rest exceptions
@@ -42,10 +44,10 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping ("/access-token")
-	public TokenDto accessToken(@RequestBody String refreshToken) {
+	public TokenPairDto accessToken(@RequestBody String refreshToken) {
 		if (jwtService.validateRefreshToken(refreshToken)) {
-			var token = jwtService.generateAccessToken(refreshToken);
-			return new TokenDto(token);
+			var accessToken = jwtService.generateAccessToken(refreshToken);
+			return new TokenPairDto(refreshToken, accessToken);
 		}
 		
 		// FIXME use the generic rest exceptions
