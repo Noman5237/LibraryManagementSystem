@@ -1,7 +1,9 @@
 package com.lms.usermanagementservice;
 
-import com.lms.usermanagementservice.core.exception.RESTException;
-import com.lms.usermanagementservice.dto.*;
+import com.lms.usermanagementservice.dto.CheckPasswordAuthenticationDto;
+import com.lms.usermanagementservice.dto.SignupDto;
+import com.lms.usermanagementservice.dto.UserDto;
+import com.lms.usermanagementservice.dto.UserPrincipalDto;
 import com.lms.usermanagementservice.model.User;
 import com.lms.usermanagementservice.service.UserActivationService;
 import com.lms.usermanagementservice.service.UserService;
@@ -26,11 +28,6 @@ public class UserController {
 		return userService.signUp(signupDto);
 	}
 	
-	@PostMapping ("/check-password-authentication")
-	public boolean checkPasswordAuthentication(@Valid @RequestBody CheckPasswordAuthenticationDto checkPasswordAuthenticationDto) {
-		return userService.checkPasswordAuthentication(checkPasswordAuthenticationDto);
-	}
-	
 	@GetMapping ("/{email}")
 	public UserDto getSimpleUser(@PathVariable String email) {
 		var user = userService.getUser(email);
@@ -42,8 +39,9 @@ public class UserController {
 	}
 	
 	@GetMapping ("/principal/{email}")
-	public UserPrincipalDto getUserPrincipal(@PathVariable String email) {
-		var user = userService.getUser(email);
+	public UserPrincipalDto getUserPrincipal(@Valid @RequestBody CheckPasswordAuthenticationDto checkPasswordAuthenticationDto) {
+		var isValidated = userService.checkPasswordAuthentication(checkPasswordAuthenticationDto);
+		var user = userService.getUser(checkPasswordAuthenticationDto.getEmail());
 		return UserPrincipalDto.builder()
 		                       .email(user.getEmail())
 		                       .userRole(user.getUserRole())

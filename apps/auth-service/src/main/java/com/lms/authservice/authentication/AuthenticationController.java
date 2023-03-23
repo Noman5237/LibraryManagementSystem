@@ -24,7 +24,7 @@ public class AuthenticationController {
 		                                              .equals("admin")) {
 			var refreshToken = jwtService.generateRefreshToken(email);
 			var accessToken = jwtService.generateAccessToken(refreshToken);
-			return new TokenPairDto(accessToken, refreshToken);
+			return new TokenPairDto(refreshToken, accessToken);
 		}
 		
 		// FIXME use the generic rest exceptions
@@ -33,25 +33,16 @@ public class AuthenticationController {
 	
 	@PostMapping ("/refresh")
 	public TokenPairDto refresh(@RequestBody String refreshToken) {
-		if (jwtService.validateRefreshToken(refreshToken)) {
-			var newRefreshToken = jwtService.generateRefreshToken(refreshToken);
-			var accessToken = jwtService.generateAccessToken(newRefreshToken);
-			return new TokenPairDto(newRefreshToken, accessToken);
-		}
-		
-		// FIXME use the generic rest exceptions
-		throw new RuntimeException("Invalid refresh token");
+		var newRefreshToken = jwtService.refreshToken(refreshToken);
+		var accessToken = jwtService.generateAccessToken(newRefreshToken);
+		return new TokenPairDto(newRefreshToken, accessToken);
 	}
 	
 	@PostMapping ("/access-token")
 	public TokenPairDto accessToken(@RequestBody String refreshToken) {
-		if (jwtService.validateRefreshToken(refreshToken)) {
-			var accessToken = jwtService.generateAccessToken(refreshToken);
-			return new TokenPairDto(refreshToken, accessToken);
-		}
-		
-		// FIXME use the generic rest exceptions
-		throw new RuntimeException("Invalid refresh token");
+		var accessToken = jwtService.generateAccessToken(refreshToken);
+		var newRefreshToken = jwtService.refreshToken(refreshToken);
+		return new TokenPairDto(newRefreshToken, accessToken);
 	}
 	
 }

@@ -2,9 +2,9 @@ package com.lms.authservice.jwt;
 
 public interface JWTService {
 	
-	String generateAccessToken(String email);
+	String generateAccessToken(String refreshToken);
 	
 	String generateRefreshToken(String email);
 	
-	boolean validateRefreshToken(String token);
+	String refreshToken(String refreshToken);
 }

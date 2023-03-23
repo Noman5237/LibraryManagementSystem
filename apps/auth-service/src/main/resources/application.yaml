@@ -4,6 +4,8 @@ server:
     context-path: /api
 
 spring:
+  redis:
+    password: password@auth
   application:
     name: auth-service
 
@@ -17,8 +19,8 @@ eureka:
 security:
   jwt:
     access-token:
-      secret: acess
+      secret: super-strong-access-token-secret
       expiration: 180
     refresh-token:
-      secret: refresh
+      secret: super-strong-refresh-token-secret
       expiration: 360
