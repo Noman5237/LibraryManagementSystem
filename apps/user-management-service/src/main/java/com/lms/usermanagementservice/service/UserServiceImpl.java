@@ -1,7 +1,6 @@
 package com.lms.usermanagementservice.service;
 
 import com.lms.usermanagementservice.UserRepository;
-import com.lms.usermanagementservice.dto.CheckPasswordAuthenticationDto;
 import com.lms.usermanagementservice.dto.SignupDto;
 import com.lms.usermanagementservice.exception.UserAlreadyExistsException;
 import com.lms.usermanagementservice.exception.UserNotFoundException;
@@ -40,19 +39,18 @@ public class UserServiceImpl implements UserService, UserActivationService {
 	}
 	
 	@Override
-	public boolean checkPasswordAuthentication(CheckPasswordAuthenticationDto checkPasswordAuthenticationDto) {
-		try {
-			var user = getUser(checkPasswordAuthenticationDto.getEmail());
-			return checkHashedPassword(user.getHashedPassword(), checkPasswordAuthenticationDto.getPassword());
-		} catch (UserNotFoundException e) {
-			return false;
-		}
-	}
-	
-	@Override
 	public User getUser(String email) {
 		return userRepository.findById(email)
 		                     .orElseThrow(() -> new UserNotFoundException(email));
+	}
+	
+	@Override
+	public User getUserPrincipal(String email, String password) {
+		var user = getUser(email);
+		if (!checkHashedPassword(user.getHashedPassword(), password)) {
+			throw new UserNotFoundException(email);
+		}
+		return user;
 	}
 	
 	@Override
@@ -77,12 +75,12 @@ public class UserServiceImpl implements UserService, UserActivationService {
 	}
 	
 	// FIXME: This is a temporary implementation. It should be replaced with a proper hashing algorithm.
-	public String hashPassword(String password) {
+	private String hashPassword(String password) {
 		return password;
 	}
 	
-	public boolean checkHashedPassword(String hashedPassword, String password) {
-		return hashedPassword.equals(password);
+	private boolean checkHashedPassword(String hashedPassword, String password) {
+		return hashedPassword.equals(hashPassword(password));
 	}
 	
 }

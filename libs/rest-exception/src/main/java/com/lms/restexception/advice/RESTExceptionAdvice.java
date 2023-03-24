@@ -1,7 +1,7 @@
 package com.lms.restexception.advice;
 
-import com.lms.restexception.exception.RESTException;
 import com.lms.restexception.dto.ExceptionResponseDto;
+import com.lms.restexception.exception.RESTException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

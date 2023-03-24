@@ -39,9 +39,8 @@ public class UserController {
 	}
 	
 	@GetMapping ("/principal/{email}")
-	public UserPrincipalDto getUserPrincipal(@Valid @RequestBody CheckPasswordAuthenticationDto checkPasswordAuthenticationDto) {
-		var isValidated = userService.checkPasswordAuthentication(checkPasswordAuthenticationDto);
-		var user = userService.getUser(checkPasswordAuthenticationDto.getEmail());
+	public UserPrincipalDto getUserPrincipal(@Valid @RequestBody CheckPasswordAuthenticationDto authenticationDto) {
+		var user = userService.getUserPrincipal(authenticationDto.getEmail(), authenticationDto.getPassword());
 		return UserPrincipalDto.builder()
 		                       .email(user.getEmail())
 		                       .userRole(user.getUserRole())

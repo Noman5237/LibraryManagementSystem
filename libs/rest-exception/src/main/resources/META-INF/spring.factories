@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.lms.restexception.advice.RESTBodyValidationAdvice,\
+    com.lms.restexception.advice.RESTExceptionAdvice
