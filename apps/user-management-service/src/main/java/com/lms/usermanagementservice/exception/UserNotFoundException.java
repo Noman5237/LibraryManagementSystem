@@ -1,6 +1,6 @@
 package com.lms.usermanagementservice.exception;
 
-import com.lms.usermanagementservice.core.exception.RESTException;
+import com.lms.restexception.exception.RESTException;
 
 public class UserNotFoundException extends RESTException {
 	

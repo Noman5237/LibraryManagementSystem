@@ -1,7 +1,7 @@
-package com.lms.usermanagementservice.core.advice;
+package com.lms.restexception.advice;
 
-import com.lms.usermanagementservice.core.dto.ExceptionResponseDto;
-import com.lms.usermanagementservice.core.exception.RESTException;
+import com.lms.restexception.exception.RESTException;
+import com.lms.restexception.dto.ExceptionResponseDto;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

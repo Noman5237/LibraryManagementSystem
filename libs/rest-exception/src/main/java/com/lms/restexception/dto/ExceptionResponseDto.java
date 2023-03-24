@@ -1,4 +1,4 @@
-package com.lms.usermanagementservice.core.dto;
+package com.lms.restexception.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

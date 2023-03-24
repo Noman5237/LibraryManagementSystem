@@ -12,59 +12,12 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/apps" />
             <option value="$PROJECT_DIR$/apps/api-gateway" />
-            <option value="$PROJECT_DIR$/apps/config-service" />
-            <option value="$PROJECT_DIR$/apps/discovery-service" />
-            <option value="$PROJECT_DIR$/apps/user-management-service" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/apps/api-gateway" />
-        <option name="gradleJvm" value="corretto-17" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/apps/api-gateway" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/apps/auth-service" />
-        <option name="gradleJvm" value="corretto-17" />
-        <option name="modules">
-          <set>
             <option value="$PROJECT_DIR$/apps/auth-service" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/apps/config-service" />
-        <option name="gradleJvm" value="corretto-17" />
-        <option name="modules">
-          <set>
             <option value="$PROJECT_DIR$/apps/config-service" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/apps/discovery-service" />
-        <option name="gradleJvm" value="corretto-17" />
-        <option name="modules">
-          <set>
             <option value="$PROJECT_DIR$/apps/discovery-service" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/apps/user-management-service" />
-        <option name="gradleJvm" value="corretto-17" />
-        <option name="modules">
-          <set>
             <option value="$PROJECT_DIR$/apps/user-management-service" />
+            <option value="$PROJECT_DIR$/libs" />
+            <option value="$PROJECT_DIR$/libs/rest-exception" />
           </set>
         </option>
       </GradleProjectSettings>

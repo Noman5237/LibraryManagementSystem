@@ -1,4 +1,4 @@
-package com.lms.usermanagementservice.core.exception;
+package com.lms.restexception.exception;
 
 import lombok.Getter;
 import org.springframework.web.client.RestClientException;

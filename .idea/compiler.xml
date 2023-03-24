@@ -6,14 +6,40 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.26/8f8cf0372abf564913e9796623aac4c8ea44025a/lombok-1.18.26.jar" />
+        </processorPath>
+        <module name="LMS.apps.user-management-service.main" />
+        <module name="LMS.libs.rest-exception.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.26/8f8cf0372abf564913e9796623aac4c8ea44025a/lombok-1.18.26.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.7.9/d2a58cd8b62976d9711178f9a12e888d0616e60c/spring-boot-configuration-processor-2.7.9.jar" />
         </processorPath>
-        <module name="auth-service.main" />
+        <module name="LMS.apps.auth-service.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="11">
+      <module name="api-gateway" target="11" />
+      <module name="api-gateway.main" target="11" />
+      <module name="api-gateway.test" target="11" />
+      <module name="auth-service" target="11" />
+      <module name="auth-service.main" target="11" />
+      <module name="auth-service.test" target="11" />
+      <module name="config-service" target="11" />
+      <module name="config-service.main" target="11" />
+      <module name="config-service.test" target="11" />
+      <module name="discovery-service" target="11" />
+      <module name="discovery-service.main" target="11" />
+      <module name="discovery-service.test" target="11" />
+      <module name="rest-exception" target="11" />
+      <module name="rest-exception.main" target="11" />
+      <module name="rest-exception.test" target="11" />
       <module name="untitled.main" target="17" />
       <module name="untitled.test" target="17" />
+      <module name="user-management-service" target="11" />
+      <module name="user-management-service.main" target="11" />
+      <module name="user-management-service.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

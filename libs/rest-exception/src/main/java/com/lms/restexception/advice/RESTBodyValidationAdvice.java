@@ -1,6 +1,6 @@
-package com.lms.usermanagementservice.core.advice;
+package com.lms.restexception.advice;
 
-import com.lms.usermanagementservice.core.dto.ExceptionResponseDto;
+import com.lms.restexception.dto.ExceptionResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
