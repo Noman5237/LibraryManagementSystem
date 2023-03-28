@@ -1,4 +1,4 @@
-package com.lms.usermanagementservice;
+package com.lms.usermanagementservice.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
