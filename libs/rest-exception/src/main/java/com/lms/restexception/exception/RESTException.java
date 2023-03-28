@@ -1,14 +1,17 @@
 package com.lms.restexception.exception;
 
+import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Map;
 
 @Getter
-public abstract class RESTException extends RestClientException {
+public class RESTException extends RestClientException {
 	
 	private final Map<String, Object> payload;
+	protected HttpStatus status = HttpStatus.BAD_REQUEST;
 	
 	public RESTException(String message) {
 		super(message);
@@ -19,4 +22,12 @@ public abstract class RESTException extends RestClientException {
 		super(message);
 		this.payload = payload;
 	}
+	
+	@Builder
+	public RESTException(String message, Map<String, Object> payload, HttpStatus status) {
+		super(message);
+		this.payload = payload;
+		this.status = status == null ? this.status : status;
+	}
+	
 }

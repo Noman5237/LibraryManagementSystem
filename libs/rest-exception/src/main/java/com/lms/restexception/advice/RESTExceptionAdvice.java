@@ -2,6 +2,7 @@ package com.lms.restexception.advice;
 
 import com.lms.restexception.dto.ExceptionResponseDto;
 import com.lms.restexception.exception.RESTException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -12,19 +13,21 @@ import java.util.Map;
 public class RESTExceptionAdvice {
 	
 	@ExceptionHandler (RESTException.class)
-	public ExceptionResponseDto handleRESTException(RESTException exception) {
-		return ExceptionResponseDto.builder()
-		                           .message(exception.getMessage())
-		                           .errors(exception.getPayload() == null ?
-				                                   null : exception.getPayload()
-				                                                   .entrySet()
-				                                                   .stream()
-				                                                   .collect(HashMap::new,
-				                                                            (map, entry) -> map.put(
-						                                                            entry.getKey(),
-						                                                            entry.getValue()
-						                                                                 .toString()),
-				                                                            Map::putAll))
-		                           .build();
+	public ResponseEntity<ExceptionResponseDto> handleRESTException(RESTException exception) {
+		var response = ExceptionResponseDto.builder()
+		                                   .message(exception.getMessage())
+		                                   .errors(exception.getPayload() == null ?
+				                                           null : exception.getPayload()
+				                                                           .entrySet()
+				                                                           .stream()
+				                                                           .collect(HashMap::new,
+				                                                                    (map, entry) -> map.put(
+						                                                                    entry.getKey(),
+						                                                                    entry.getValue()
+						                                                                         .toString()),
+				                                                                    Map::putAll))
+		                                   .build();
+		return ResponseEntity.status(exception.getStatus())
+		                     .body(response);
 	}
 }
