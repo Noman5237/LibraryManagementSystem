@@ -1,4 +1,4 @@
-package com.lms.usermanagementservice.model;
+package com.lms.usermanagementservice.user.model;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.util.Date;
 import static javax.persistence.EnumType.STRING;
 
 @Entity
-@Table (name = "user", schema = "public")
+@Table (name = "user")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

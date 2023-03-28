@@ -1,6 +1,6 @@
-package com.lms.usermanagementservice.dto;
+package com.lms.usermanagementservice.user.dto;
 
-import com.lms.usermanagementservice.model.UserRole;
+import com.lms.usermanagementservice.user.model.UserRole;
 import lombok.Builder;
 import lombok.Data;
 

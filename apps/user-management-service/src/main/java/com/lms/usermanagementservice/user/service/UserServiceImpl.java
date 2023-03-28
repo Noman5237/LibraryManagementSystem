@@ -1,11 +1,11 @@
-package com.lms.usermanagementservice.service;
+package com.lms.usermanagementservice.user.service;
 
-import com.lms.usermanagementservice.UserRepository;
-import com.lms.usermanagementservice.dto.SignupDto;
-import com.lms.usermanagementservice.exception.UserAlreadyExistsException;
-import com.lms.usermanagementservice.exception.UserNotFoundException;
-import com.lms.usermanagementservice.model.AccountStatus;
-import com.lms.usermanagementservice.model.User;
+import com.lms.usermanagementservice.user.UserRepository;
+import com.lms.usermanagementservice.user.dto.SignupDto;
+import com.lms.usermanagementservice.user.exception.UserAlreadyExistsException;
+import com.lms.usermanagementservice.user.exception.UserNotFoundException;
+import com.lms.usermanagementservice.user.model.AccountStatus;
+import com.lms.usermanagementservice.user.model.User;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
@@ -45,15 +45,6 @@ public class UserServiceImpl implements UserService, UserActivationService {
 	}
 	
 	@Override
-	public User getUserPrincipal(String email, String password) {
-		var user = getUser(email);
-		if (!checkHashedPassword(user.getHashedPassword(), password)) {
-			throw new UserNotFoundException(email);
-		}
-		return user;
-	}
-	
-	@Override
 	public User deleteUser(String email) {
 		var user = getUser(email);
 		userRepository.deleteById(user.getEmail());
@@ -79,7 +70,8 @@ public class UserServiceImpl implements UserService, UserActivationService {
 		return password;
 	}
 	
-	private boolean checkHashedPassword(String hashedPassword, String password) {
+	@Override
+	public boolean checkHashedPassword(String hashedPassword, String password) {
 		return hashedPassword.equals(hashPassword(password));
 	}
 	

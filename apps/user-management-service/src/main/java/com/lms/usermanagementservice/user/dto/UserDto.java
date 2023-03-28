@@ -1,4 +1,4 @@
-package com.lms.usermanagementservice.dto;
+package com.lms.usermanagementservice.user.dto;
 
 
 import lombok.Builder;

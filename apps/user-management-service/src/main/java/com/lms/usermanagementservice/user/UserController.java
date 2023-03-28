@@ -1,14 +1,15 @@
-package com.lms.usermanagementservice;
+package com.lms.usermanagementservice.user;
 
-import com.lms.usermanagementservice.dto.CheckPasswordAuthenticationDto;
-import com.lms.usermanagementservice.dto.SignupDto;
-import com.lms.usermanagementservice.dto.UserDto;
-import com.lms.usermanagementservice.dto.UserPrincipalDto;
-import com.lms.usermanagementservice.model.User;
-import com.lms.usermanagementservice.service.UserActivationService;
-import com.lms.usermanagementservice.service.UserService;
+import com.lms.usermanagementservice.authentication.Authenticators;
+import com.lms.usermanagementservice.user.dto.SignupDto;
+import com.lms.usermanagementservice.user.dto.UserDto;
+import com.lms.usermanagementservice.user.dto.UserPrincipalDto;
+import com.lms.usermanagementservice.user.model.User;
+import com.lms.usermanagementservice.user.service.UserActivationService;
+import com.lms.usermanagementservice.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -38,9 +39,9 @@ public class UserController {
 		              .build();
 	}
 	
-	@GetMapping ("/principal/{email}")
-	public UserPrincipalDto getUserPrincipal(@Valid @RequestBody CheckPasswordAuthenticationDto authenticationDto) {
-		var user = userService.getUserPrincipal(authenticationDto.getEmail(), authenticationDto.getPassword());
+	@PostMapping ("/principal")
+	public UserPrincipalDto getUserPrincipal(HttpServletRequest request, @RequestParam String method) {
+		var user = Authenticators.getAuthenticatedUser(method, request);
 		return UserPrincipalDto.builder()
 		                       .email(user.getEmail())
 		                       .userRole(user.getUserRole())

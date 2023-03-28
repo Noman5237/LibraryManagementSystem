@@ -1,4 +1,4 @@
-package com.lms.usermanagementservice.service;
+package com.lms.usermanagementservice.user.service;
 
 public interface UserActivationService {
 	
