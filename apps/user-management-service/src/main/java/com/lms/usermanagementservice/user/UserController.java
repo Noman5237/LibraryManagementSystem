@@ -1,6 +1,6 @@
 package com.lms.usermanagementservice.user;
 
-import com.lms.usermanagementservice.authentication.Authenticators;
+import com.lms.usermanagementservice.authentication.AuthenticationStrategies;
 import com.lms.usermanagementservice.user.dto.SignupDto;
 import com.lms.usermanagementservice.user.dto.UserDto;
 import com.lms.usermanagementservice.user.dto.UserPrincipalDto;
@@ -40,8 +40,8 @@ public class UserController {
 	}
 	
 	@PostMapping ("/principal")
-	public UserPrincipalDto getUserPrincipal(HttpServletRequest request, @RequestParam String method) {
-		var user = Authenticators.getAuthenticatedUser(method, request);
+	public UserPrincipalDto getUserPrincipal(HttpServletRequest request, @RequestParam String strategy) {
+		var user = AuthenticationStrategies.getAuthenticatedUser(strategy, request);
 		return UserPrincipalDto.builder()
 		                       .email(user.getEmail())
 		                       .userRole(user.getUserRole())

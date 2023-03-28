@@ -9,7 +9,7 @@ import java.util.Date;
 import static javax.persistence.EnumType.STRING;
 
 @Entity
-@Table (name = "user")
+@Table (name = "user", schema = "public")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

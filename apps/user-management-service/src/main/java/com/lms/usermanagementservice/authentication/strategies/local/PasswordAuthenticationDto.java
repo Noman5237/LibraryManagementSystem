@@ -1,4 +1,4 @@
-package com.lms.usermanagementservice.authentication.authenticators.local;
+package com.lms.usermanagementservice.authentication.strategies.local;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

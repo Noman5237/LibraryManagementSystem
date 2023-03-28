@@ -1,9 +1,9 @@
-package com.lms.usermanagementservice.authentication.authenticators.local;
+package com.lms.usermanagementservice.authentication.strategies.local;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lms.restexception.exception.RESTException;
-import com.lms.usermanagementservice.authentication.authenticators.Authenticator;
+import com.lms.usermanagementservice.authentication.strategies.AuthenticationStrategy;
 import com.lms.usermanagementservice.user.exception.UserNotFoundException;
 import com.lms.usermanagementservice.user.model.User;
 import com.lms.usermanagementservice.user.service.UserService;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class PasswordAuthenticator extends Authenticator {
+public class PasswordAuthenticationStrategy extends AuthenticationStrategy {
 	
 	private final UserService userService;
 	
-	public PasswordAuthenticator(UserService userService) {
+	public PasswordAuthenticationStrategy(UserService userService) {
 		this.userService = userService;
 	}
 	
