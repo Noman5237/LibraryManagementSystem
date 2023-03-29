@@ -153,7 +153,7 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: [ "CMD", "redis-cli ping -a ${AUTH_SERVICE_DB_PASSWORD} | grep PONG" ]
+      test: [ "CMD-SHELL", 'redis-cli -a "$$AUTH_SERVICE_DB_PASSWORD" PING | grep PONG' ]
       interval: 5s
       timeout: 3s
       retries: 3
