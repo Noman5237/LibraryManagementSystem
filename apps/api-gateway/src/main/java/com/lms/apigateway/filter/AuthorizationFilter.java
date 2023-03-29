@@ -66,7 +66,7 @@ public class AuthorizationFilter implements GlobalFilter {
 				                       return chain.filter(exchange);
 			                       } else {
 				                       // if invalid, return 401
-				                       return onError(exchange, HttpStatus.UNAUTHORIZED, "Invalid JWT token", null);
+				                       return onError(exchange, HttpStatus.UNAUTHORIZED, "Invalid access token", null);
 			                       }
 		                       });
 	}

@@ -20,7 +20,6 @@ spring:
           filters:
             - RewritePath=/api/user-management/?(?<segment>.*), /api/user/$\{segment}
         # FIXME: Make sure that only external clients can access /authenticate
-        # FIXME: Make sure that only api gateway access /authorize
         - id: authentication-service
           uri: http://${hosts.auth-service}:8082
           metadata:

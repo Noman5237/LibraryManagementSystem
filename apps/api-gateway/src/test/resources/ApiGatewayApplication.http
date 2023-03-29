@@ -1,0 +1,26 @@
+### Local Authentication
+POST http://localhost:8079/api/authenticate/?strategy=local
+Content-Type: application/json
+
+{
+  "email": "admin@lms.edu",
+  "password": "12345678"
+}
+
+### Get Access Token
+POST http://localhost:8079/api/authenticate/refresh
+Content-Type: text/plain
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlzcyI6ImFkbWluQGxtcy5lZHUiLCJpYXQiOjE2ODAwOTUzMjEsImV4cCI6MTY4MDEwMTMyMX0.Yzj6cWqwTQWdf3ASbbnJvZjXIo656wGt646onodYNxw
+
+### Check Authorized
+POST http://localhost:8082/api/authorize/check-access-token
+Content-Type: text/plain
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlzcyI6Ill6ajZjV3F3VFFXZGYzQVNiYm5KdlpqWElvNjU2d0d0NjQ2b25vZFlOeHciLCJpYXQiOjE2ODAwOTU1NTYsImV4cCI6MTY4MDEwNzU1Nn0.7vvkSGsM6HopLpFxyObqs5qgqMnN5bXptMqgSk1HGQA
+
+### Get User Info
+GET http://localhost:8079/api/user-management/admin@lms.edu
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlzcyI6Ill6ajZjV3F3VFFXZGYzQVNiYm5KdlpqWElvNjU2d0d0NjQ2b25vZFlOeHciLCJpYXQiOjE2ODAwOTU1NTYsImV4cCI6MTY4MDEwNzU1Nn0.7vvkSGsM6HopLpFxyObqs5qgqMnN5bXptMqgSk1HGQA
+
+
