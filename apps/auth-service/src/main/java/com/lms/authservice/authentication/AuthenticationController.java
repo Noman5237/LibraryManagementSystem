@@ -2,33 +2,32 @@ package com.lms.authservice.authentication;
 
 import com.lms.authservice.dto.TokenPairDto;
 import com.lms.authservice.jwt.JWTService;
+import com.lms.authservice.authentication.service.external.UserManagementService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping ("/authenticate")
 public class AuthenticationController {
 	
 	private final JWTService jwtService;
+	private final UserManagementService userManagementService;
 	
-	public AuthenticationController(JWTService jwtService) {
+	public AuthenticationController(JWTService jwtService, UserManagementService userManagementService) {
 		this.jwtService = jwtService;
+		this.userManagementService = userManagementService;
 	}
 	
 	@PostMapping ("/")
-	public TokenPairDto authenticate(@RequestBody AuthenticationDto authenticationDto) {
-		String email = authenticationDto.getEmail();
-		if (email.equals("admin") && authenticationDto.getPassword()
-		                                              .equals("admin")) {
-			var refreshToken = jwtService.generateRefreshToken(email);
-			var accessToken = jwtService.generateAccessToken(refreshToken);
-			return new TokenPairDto(refreshToken, accessToken);
-		}
-		
-		// FIXME use the generic rest exceptions
-		throw new RuntimeException("Invalid credentials");
+	public TokenPairDto authenticate(HttpServletRequest request) {
+		var userPrincipal = userManagementService.getUserPrincipal(request);
+		var refreshToken = jwtService.generateRefreshToken(userPrincipal);
+		var accessToken = jwtService.generateAccessToken(refreshToken);
+		return new TokenPairDto(refreshToken, accessToken);
 	}
 	
 	@PostMapping ("/refresh")
@@ -41,8 +40,7 @@ public class AuthenticationController {
 	@PostMapping ("/access-token")
 	public TokenPairDto accessToken(@RequestBody String refreshToken) {
 		var accessToken = jwtService.generateAccessToken(refreshToken);
-		var newRefreshToken = jwtService.refreshToken(refreshToken);
-		return new TokenPairDto(newRefreshToken, accessToken);
+		return new TokenPairDto(refreshToken, accessToken);
 	}
 	
 }
