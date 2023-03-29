@@ -7,16 +7,14 @@ Content-Type: application/json
   "password": "12345678"
 }
 
-<> 2023-03-29T161821.200.json
-
 ### Get Access Token
 POST http://localhost:8082/api/authenticate/refresh
 Content-Type: text/plain
 
-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlhdCI6MTY4MDA4NTEwMSwiZXhwIjoxNjgwMDkxMTAxfQ.6bqr1zkz8bxO_RMoktRBGMi1XP_aGk-1n2sDjapQfaw
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlzcyI6IlZ6WFcwc2NjVmNHeG5pMU1nN1VvWmhZNXNjQ2o3YXNlRDF2MzlYXzQwUVUiLCJpYXQiOjE2ODAwOTQyODMsImV4cCI6MTY4MDEwMDI4M30.10iYQU9Brjcbvx_4DlZpgz8Wylx23srV65WB92XVlME
 
 ### Check Authorized
 POST http://localhost:8082/api/authorize/check-access-token
 Content-Type: text/plain
 
-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlhdCI6MTY4MDA4NTEwMSwiZXhwIjoxNjgwMDk3MTAxfQ.nYgSnbmpKIodO4oMpGtGQzxsfqwrQcRPcTH6waE_XNQ
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlhdCI6MTY4MDA5MDY1OCwiZXhwIjoxNjgwMTAyNjU4fQ.ACZB9hPT5h39JsrA0ku4M9MW-ksTpnVJ_Ql4jEKGDvk

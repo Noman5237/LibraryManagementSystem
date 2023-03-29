@@ -37,10 +37,4 @@ public class AuthenticationController {
 		return new TokenPairDto(newRefreshToken, accessToken);
 	}
 	
-	@PostMapping ("/access-token")
-	public TokenPairDto accessToken(@RequestBody String refreshToken) {
-		var accessToken = jwtService.generateAccessToken(refreshToken);
-		return new TokenPairDto(refreshToken, accessToken);
-	}
-	
 }

@@ -1,7 +1,6 @@
 package com.lms.authservice.jwt;
 
-import com.lms.authservice.dto.UserPrincipalDto;
-import com.lms.authservice.jwt.exceptions.RefreshTokenAlreadyUsedException;
+import com.lms.authservice.authentication.dto.UserPrincipalDto;
 
 public interface JWTService {
 	
@@ -12,6 +11,4 @@ public interface JWTService {
 	String refreshToken(String refreshToken);
 	
 	boolean validateAccessToken(String accessToken);
-	
-	boolean validateRefreshToken(String refreshToken) throws RefreshTokenAlreadyUsedException;
 }
