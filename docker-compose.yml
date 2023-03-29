@@ -71,6 +71,9 @@ services:
       - spring.cloud.config.enabled=true
       - spring.config.import=optional:configserver:http://config-service:8078
       - spring.profiles.active=dpe
+      - AUTH_SERVICE_DB_PASSWORD
+      - AUTH_SERVICE_ACCESS_TOKEN_SECRET
+      - AUTH_SERVICE_REFRESH_TOKEN_SECRET
     command: java -jar auth-service.jar
     networks:
       - lms-network
@@ -80,6 +83,8 @@ services:
       auth-service-db:
         condition: service_healthy
       discovery-service:
+        condition: service_healthy
+      user-management-service:
         condition: service_healthy
     deploy:
       replicas: 1
@@ -108,6 +113,14 @@ services:
         condition: service_healthy
     deploy:
       replicas: 1
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/api/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  ################################ DB ################################
 
   user-management-service-db:
     image: postgres:${USER_MANAGEMENT_SERVICE_DB_VERSION}
@@ -131,6 +144,8 @@ services:
   auth-service-db:
     image: redis:alpine
     command: redis-server --requirepass ${AUTH_SERVICE_DB_PASSWORD}
+    environment:
+      - AUTH_SERVICE_DB_PASSWORD
     volumes:
       - auth-service-db-data:/data
     networks:
@@ -138,7 +153,7 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: [ "CMD", "redis-cli ping | grep PONG" ]
+      test: [ "CMD", "redis-cli ping -a ${AUTH_SERVICE_DB_PASSWORD} | grep PONG" ]
       interval: 5s
       timeout: 3s
       retries: 3
