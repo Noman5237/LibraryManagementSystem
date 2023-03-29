@@ -1,6 +1,6 @@
 package com.lms.authservice.jwt;
 
-import com.lms.authservice.dto.UserPrincipalDto;
+import com.lms.authservice.authentication.dto.UserPrincipalDto;
 import com.lms.authservice.jwt.exceptions.InvalidAccessTokenException;
 import com.lms.authservice.jwt.exceptions.InvalidRefreshTokenException;
 import com.lms.authservice.jwt.exceptions.RefreshTokenAlreadyUsedException;
@@ -11,6 +11,7 @@ import io.jsonwebtoken.*;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Optional;
 
 @Service
 public class JWTServiceImpl implements JWTService {
@@ -26,18 +27,19 @@ public class JWTServiceImpl implements JWTService {
 	
 	@Override
 	public String generateAccessToken(String refreshToken) {
-		boolean isValid = false;
+		Optional<RefreshToken> optionalRefreshToken = Optional.empty();
 		try {
-			isValid = validateRefreshToken(refreshToken);
+			optionalRefreshToken = validateRefreshToken(refreshToken);
 		} catch (RefreshTokenAlreadyUsedException ignored) {
 			invalidateRefreshTokenChain(refreshToken);
 		}
 		
-		if (!isValid) {
+		if (optionalRefreshToken.isEmpty()) {
 			throw new InvalidRefreshTokenException();
 		}
 		
-		var accessToken = createAccessToken(refreshToken);
+		var accessToken = createAccessToken(optionalRefreshToken.get()
+		                                                        .getToken());
 		return accessToken.getToken();
 	}
 	
@@ -50,41 +52,43 @@ public class JWTServiceImpl implements JWTService {
 	
 	@Override
 	public String refreshToken(String refreshToken) {
-		boolean isVerified = false;
+		Optional<RefreshToken> optionalRefreshToken = Optional.empty();
 		try {
-			isVerified = validateRefreshToken(refreshToken);
+			optionalRefreshToken = validateRefreshToken(refreshToken);
 		} catch (RefreshTokenAlreadyUsedException ignored) {
 			invalidateRefreshTokenChain(refreshToken);
 		}
 		
-		if (!isVerified) {
+		if (optionalRefreshToken.isEmpty()) {
 			throw new InvalidRefreshTokenException();
 		}
 		
-		var newRefreshToken = createRefreshToken(refreshToken);
+		var oldRefreshToken = optionalRefreshToken.get();
+		var newRefreshToken = createRefreshToken(oldRefreshToken.getToken());
+		
+		oldRefreshToken.setSuccessor(newRefreshToken.getToken());
+		refreshTokenRepository.save(oldRefreshToken);
 		refreshTokenRepository.save(newRefreshToken);
+		
 		return newRefreshToken.getToken();
 	}
 	
-	public boolean validateAccessToken(String token) {
+	public boolean validateAccessToken(String accessToken) {
 		try {
-			parseJWT(token, jwtConfiguration.getAccessTokenKey());
+			parseJWT(accessToken, jwtConfiguration.getAccessTokenKey());
 			return true;
 		} catch (JwtException ignored) {
 			return false;
 		}
 	}
 	
-	public boolean validateRefreshToken(String token) throws RefreshTokenAlreadyUsedException {
+	private Optional<RefreshToken> validateRefreshToken(String token) throws RefreshTokenAlreadyUsedException {
 		try {
-			Jwts.parserBuilder()
-			    .setSigningKey(jwtConfiguration.getRefreshTokenKey())
-			    .build()
-			    .parseClaimsJws(token);
+			parseJWT(token, jwtConfiguration.getRefreshTokenKey());
 			
 			var refreshToken = refreshTokenRepository.findById(token);
 			if (refreshToken.isEmpty()) {
-				return false;
+				return Optional.empty();
 			}
 			
 			RefreshToken storedToken = refreshToken.get();
@@ -93,9 +97,9 @@ public class JWTServiceImpl implements JWTService {
 				throw new RefreshTokenAlreadyUsedException();
 			}
 			
-			return true;
+			return Optional.of(storedToken);
 		} catch (JwtException e) {
-			return false;
+			return Optional.empty();
 		}
 	}
 	
@@ -120,8 +124,9 @@ public class JWTServiceImpl implements JWTService {
 		                      .claim("role",
 		                             userPrincipal.getUserRole()
 		                                          .name())
+		                      .setIssuer(userPrincipal.getEmail())
 		                      .setIssuedAt(new java.util.Date())
-		                      .setExpiration(new java.util.Date(System.currentTimeMillis() + jwtConfiguration.refreshTokenExpiration))
+		                      .setExpiration(new java.util.Date(System.currentTimeMillis() + jwtConfiguration.refreshTokenExpiration * 1000L))
 		                      .compact();
 		
 		return RefreshToken.builder()
@@ -133,7 +138,11 @@ public class JWTServiceImpl implements JWTService {
 	private RefreshToken createRefreshToken(String refreshToken) {
 		var claims = parseJWT(refreshToken, jwtConfiguration.getRefreshTokenKey());
 		var tokenString = Jwts.builder()
+		                      .signWith(jwtConfiguration.getRefreshTokenKey())
 		                      .setClaims(claims.getBody())
+		                      .setIssuer(claims.getSignature())
+		                      .setIssuedAt(new java.util.Date())
+		                      .setExpiration(new java.util.Date(System.currentTimeMillis() + jwtConfiguration.refreshTokenExpiration * 1000L))
 		                      .compact();
 		
 		return RefreshToken.builder()
@@ -149,7 +158,7 @@ public class JWTServiceImpl implements JWTService {
 		                      .signWith(jwtConfiguration.getAccessTokenKey())
 		                      .setClaims(claims.getBody())
 		                      .setIssuedAt(new java.util.Date())
-		                      .setExpiration(new java.util.Date(System.currentTimeMillis() + jwtConfiguration.accessTokenExpiration))
+		                      .setExpiration(new java.util.Date(System.currentTimeMillis() + jwtConfiguration.accessTokenExpiration * 1000L))
 		                      .compact();
 		
 		return AccessToken.builder()
