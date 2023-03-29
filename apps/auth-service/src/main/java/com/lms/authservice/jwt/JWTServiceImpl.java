@@ -1,13 +1,13 @@
 package com.lms.authservice.jwt;
 
 import com.lms.authservice.dto.UserPrincipalDto;
+import com.lms.authservice.jwt.exceptions.InvalidAccessTokenException;
+import com.lms.authservice.jwt.exceptions.InvalidRefreshTokenException;
+import com.lms.authservice.jwt.exceptions.RefreshTokenAlreadyUsedException;
 import com.lms.authservice.jwt.tokens.accesstoken.AccessToken;
 import com.lms.authservice.jwt.tokens.refreshtoken.RefreshToken;
 import com.lms.authservice.jwt.tokens.refreshtoken.RefreshTokenRepository;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -26,11 +26,17 @@ public class JWTServiceImpl implements JWTService {
 	
 	@Override
 	public String generateAccessToken(String refreshToken) {
-		var isValid = validateRefreshToken(refreshToken);
-		if (!isValid) {
-			// FIXME: throw exception
-			return null;
+		boolean isValid = false;
+		try {
+			isValid = validateRefreshToken(refreshToken);
+		} catch (RefreshTokenAlreadyUsedException ignored) {
+			invalidateRefreshTokenChain(refreshToken);
 		}
+		
+		if (!isValid) {
+			throw new InvalidRefreshTokenException();
+		}
+		
 		var accessToken = createAccessToken(refreshToken);
 		return accessToken.getToken();
 	}
@@ -44,19 +50,18 @@ public class JWTServiceImpl implements JWTService {
 	
 	@Override
 	public String refreshToken(String refreshToken) {
-		var isVerified = validateRefreshToken(refreshToken);
-		if (!isVerified) {
-			// FIXME: throw exception
-			return null;
+		boolean isVerified = false;
+		try {
+			isVerified = validateRefreshToken(refreshToken);
+		} catch (RefreshTokenAlreadyUsedException ignored) {
+			invalidateRefreshTokenChain(refreshToken);
 		}
-		var claims = parseJWT(refreshToken, jwtConfiguration.getRefreshTokenKey());
-		var email = claims.getBody()
-		                  .getSubject();
-		// FIXME: get the roles from the claims
-		var userPrincipal = UserPrincipalDto.builder()
-		                                    .email(email)
-		                                    .build();
-		var newRefreshToken = createRefreshToken(userPrincipal);
+		
+		if (!isVerified) {
+			throw new InvalidRefreshTokenException();
+		}
+		
+		var newRefreshToken = createRefreshToken(refreshToken);
 		refreshTokenRepository.save(newRefreshToken);
 		return newRefreshToken.getToken();
 	}
@@ -65,12 +70,12 @@ public class JWTServiceImpl implements JWTService {
 		try {
 			parseJWT(token, jwtConfiguration.getAccessTokenKey());
 			return true;
-		} catch (Exception e) {
+		} catch (JwtException ignored) {
 			return false;
 		}
 	}
 	
-	public boolean validateRefreshToken(String token) {
+	public boolean validateRefreshToken(String token) throws RefreshTokenAlreadyUsedException {
 		try {
 			Jwts.parserBuilder()
 			    .setSigningKey(jwtConfiguration.getRefreshTokenKey())
@@ -84,38 +89,37 @@ public class JWTServiceImpl implements JWTService {
 			
 			RefreshToken storedToken = refreshToken.get();
 			boolean used = storedToken.isUsed();
-			if (!used) {
-				return true;
+			if (used) {
+				throw new RefreshTokenAlreadyUsedException();
 			}
 			
-			// FIXME: refactor out the side effect
-			// Delete all refresh tokens that are successors of this token
-			while (storedToken.getSuccessor() != null) {
-				var successor = refreshTokenRepository.findById(storedToken.getSuccessor());
-				if (successor.isPresent()) {
-					storedToken = successor.get();
-					refreshTokenRepository.delete(storedToken);
-				}
-			}
-			
-			return false;
+			return true;
 		} catch (JwtException e) {
 			return false;
 		}
 	}
 	
 	private Jws<Claims> parseJWT(String token, Key signingKey) {
-		// FIXME: throw invalid refresh token rest exception
-		return Jwts.parserBuilder()
-		           .setSigningKey(signingKey)
-		           .build()
-		           .parseClaimsJws(token);
+		try {
+			return Jwts.parserBuilder()
+			           .setSigningKey(signingKey)
+			           .build()
+			           .parseClaimsJws(token);
+		} catch (ExpiredJwtException e) {
+			throw new InvalidAccessTokenException("Access token expired");
+		} catch (JwtException e) {
+			throw new InvalidAccessTokenException();
+		}
 	}
 	
 	private RefreshToken createRefreshToken(UserPrincipalDto userPrincipal) {
+		
 		var tokenString = Jwts.builder()
 		                      .signWith(jwtConfiguration.getRefreshTokenKey())
 		                      .setSubject(userPrincipal.getEmail())
+		                      .claim("role",
+		                             userPrincipal.getUserRole()
+		                                          .name())
 		                      .setIssuedAt(new java.util.Date())
 		                      .setExpiration(new java.util.Date(System.currentTimeMillis() + jwtConfiguration.refreshTokenExpiration))
 		                      .compact();
@@ -124,6 +128,19 @@ public class JWTServiceImpl implements JWTService {
 		                   .token(tokenString)
 		                   .expiration((long) jwtConfiguration.refreshTokenExpiration)
 		                   .build();
+	}
+	
+	private RefreshToken createRefreshToken(String refreshToken) {
+		var claims = parseJWT(refreshToken, jwtConfiguration.getRefreshTokenKey());
+		var tokenString = Jwts.builder()
+		                      .setClaims(claims.getBody())
+		                      .compact();
+		
+		return RefreshToken.builder()
+		                   .token(tokenString)
+		                   .expiration((long) jwtConfiguration.refreshTokenExpiration)
+		                   .build();
+		
 	}
 	
 	private AccessToken createAccessToken(String refreshToken) {
@@ -141,4 +158,20 @@ public class JWTServiceImpl implements JWTService {
 		                  .build();
 	}
 	
+	private void invalidateRefreshTokenChain(String token) {
+		var optionalRefreshToken = refreshTokenRepository.findById(token);
+		if (optionalRefreshToken.isEmpty()) {
+			return;
+		}
+		
+		// TODO: Test the correctness of the algorithm
+		var refreshToken = optionalRefreshToken.get();
+		while (refreshToken.getSuccessor() != null) {
+			var successor = refreshTokenRepository.findById(refreshToken.getSuccessor());
+			if (successor.isPresent()) {
+				refreshToken = successor.get();
+				refreshTokenRepository.delete(refreshToken);
+			}
+		}
+	}
 }

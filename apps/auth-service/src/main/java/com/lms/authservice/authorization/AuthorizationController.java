@@ -16,8 +16,8 @@ public class AuthorizationController {
 		this.jwtService = jwtService;
 	}
 	
-	@PostMapping ("/check-jwt")
+	@PostMapping ("/check-access-token")
 	public boolean checkJwt(@RequestBody String jwt) {
-		return jwtService.validateRefreshToken(jwt);
+		return jwtService.validateAccessToken(jwt);
 	}
 }
