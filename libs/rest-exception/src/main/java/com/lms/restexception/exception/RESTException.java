@@ -10,7 +10,7 @@ import java.util.Map;
 @Getter
 public class RESTException extends RestClientException {
 	
-	private final Map<String, Object> payload;
+	private final Map<String, ?> payload;
 	protected HttpStatus status = HttpStatus.BAD_REQUEST;
 	
 	public RESTException(String message) {
@@ -18,13 +18,13 @@ public class RESTException extends RestClientException {
 		this.payload = null;
 	}
 	
-	public RESTException(String message, Map<String, Object> payload) {
+	public RESTException(String message, Map<String, ?> payload) {
 		super(message);
 		this.payload = payload;
 	}
 	
 	@Builder
-	public RESTException(String message, Map<String, Object> payload, HttpStatus status) {
+	public RESTException(String message, Map<String, ?> payload, HttpStatus status) {
 		super(message);
 		this.payload = payload;
 		this.status = status == null ? this.status : status;

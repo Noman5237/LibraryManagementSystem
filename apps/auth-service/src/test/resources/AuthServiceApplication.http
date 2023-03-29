@@ -1,0 +1,22 @@
+### Local Authentication
+POST http://localhost:8082/api/authenticate/?strategy=local
+Content-Type: application/json
+
+{
+  "email": "admin@lms.edu",
+  "password": "12345678"
+}
+
+<> 2023-03-29T161821.200.json
+
+### Get Access Token
+POST http://localhost:8082/api/authenticate/refresh
+Content-Type: text/plain
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlhdCI6MTY4MDA4NTEwMSwiZXhwIjoxNjgwMDkxMTAxfQ.6bqr1zkz8bxO_RMoktRBGMi1XP_aGk-1n2sDjapQfaw
+
+### Check Authorized
+POST http://localhost:8082/api/authorize/check-access-token
+Content-Type: text/plain
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsbXMuZWR1Iiwicm9sZSI6IkxJQlJBUllfU1VQRVJWSVNPUiIsImlhdCI6MTY4MDA4NTEwMSwiZXhwIjoxNjgwMDk3MTAxfQ.nYgSnbmpKIodO4oMpGtGQzxsfqwrQcRPcTH6waE_XNQ

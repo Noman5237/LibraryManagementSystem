@@ -18,9 +18,9 @@ eureka:
 
 security:
   jwt:
-    access-token:
-      secret: super-strong-access-token-secret
-      expiration: 180
     refresh-token:
       secret: super-strong-refresh-token-secret
-      expiration: 360
+      expiration: 6000
+    access-token:
+      secret: super-strong-access-token-secret
+      expiration: 12000

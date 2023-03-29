@@ -55,7 +55,7 @@ public class AuthorizationFilter implements GlobalFilter {
 		return webClientBuilder.baseUrl("http://auth-service:8082/api")
 		                       .build()
 		                       .post()
-		                       .uri("/authorize/check-jwt")
+		                       .uri("/authorize/check-access-token")
 		                       .contentType(MediaType.TEXT_PLAIN)
 		                       .body(Mono.just(jwt), String.class)
 		                       .retrieve()

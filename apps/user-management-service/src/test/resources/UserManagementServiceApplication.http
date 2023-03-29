@@ -1,0 +1,37 @@
+### Signup a new user
+POST http://localhost:8081/api/user/signup
+Content-Type: application/json
+
+{
+  "email": "admin@lms.edu",
+  "firstName": "Super",
+  "lastName": "Admin",
+  "dob": "2023-01-01",
+  "password": "12345678",
+  "userRole": "LIBRARY_SUPERVISOR"
+}
+
+### Get the user by email
+GET http://localhost:8081/api/user/admin@lms.edu
+
+<> f-9.txt
+<> f-8.txt
+<> f-7.txt
+<> f-6.txt
+<> f-5.txt
+
+### Get the user principal by local authentication strategy
+POST http://localhost:8081/api/user/principal?strategy=local
+Content-Type: application/json
+
+{
+  "email": "admin@lms.edu",
+  "password": "12345678"
+}
+
+<> 2023-03-28T214407.500.json
+<> 2023-03-28T211904.200.json
+<> 2023-03-28T211849.400.json
+<> 2023-03-28T211712.500.json
+<> 2023-03-28T211650.404.json
+
