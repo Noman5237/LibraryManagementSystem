@@ -11,4 +11,8 @@ public interface JWTService {
 	String refreshToken(String refreshToken);
 	
 	boolean validateAccessToken(String accessToken);
+	
+	void invalidateRefreshTokenChain(String token);
+	
+	void invalidateAllRefreshTokenChains(String refreshToken);
 }

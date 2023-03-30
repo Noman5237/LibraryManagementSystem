@@ -33,7 +33,7 @@ security:
   jwt:
     refresh-token:
       secret: super-strong-refresh-token-secret
-      expiration: 6000
+      expiration: 600
     access-token:
       secret: super-strong-access-token-secret
-      expiration: 12000
+      expiration: 300

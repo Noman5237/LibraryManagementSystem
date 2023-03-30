@@ -21,6 +21,8 @@ public class RefreshToken implements Serializable {
 	@TimeToLive
 	private Long expiration;
 	
+	private String email;
+	
 	private String successor;
 	
 	public boolean isUsed() {

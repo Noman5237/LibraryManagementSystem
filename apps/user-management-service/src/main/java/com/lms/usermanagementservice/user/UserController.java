@@ -7,10 +7,14 @@ import com.lms.usermanagementservice.user.dto.UserPrincipalDto;
 import com.lms.usermanagementservice.user.model.User;
 import com.lms.usermanagementservice.user.service.UserActivationService;
 import com.lms.usermanagementservice.user.service.UserService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping ("/user")
@@ -40,6 +44,10 @@ public class UserController {
 	}
 	
 	@PostMapping ("/principal")
+	@io.swagger.v3.oas.annotations.parameters.RequestBody (required = true,
+			content = @Content (mediaType = "application/json",
+					schema = @Schema (implementation = Map.class),
+					examples = @ExampleObject (value = "{\n" + "  \"email\": \"admin@lms.edu\",\n" + "  \"password\": \"12345678\"\n" + "}")))
 	public UserPrincipalDto getUserPrincipal(HttpServletRequest request, @RequestParam String strategy) {
 		var user = AuthenticationStrategies.getAuthenticatedUser(strategy, request);
 		return UserPrincipalDto.builder()

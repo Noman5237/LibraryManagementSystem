@@ -73,6 +73,7 @@ public class JWTServiceImpl implements JWTService {
 		return newRefreshToken.getToken();
 	}
 	
+	@Override
 	public boolean validateAccessToken(String accessToken) {
 		try {
 			parseJWT(accessToken, jwtConfiguration.getAccessTokenKey());
@@ -80,6 +81,32 @@ public class JWTServiceImpl implements JWTService {
 		} catch (JwtException ignored) {
 			return false;
 		}
+	}
+	
+	@Override
+	public void invalidateRefreshTokenChain(String token) {
+		var optionalRefreshToken = refreshTokenRepository.findById(token);
+		if (optionalRefreshToken.isEmpty()) {
+			return;
+		}
+		
+		// TODO: Test the correctness of the algorithm
+		var refreshToken = optionalRefreshToken.get();
+		refreshTokenRepository.delete(refreshToken);
+		while (refreshToken.getSuccessor() != null) {
+			var successor = refreshTokenRepository.findById(refreshToken.getSuccessor());
+			if (successor.isPresent()) {
+				refreshToken = successor.get();
+				refreshTokenRepository.deleteById(refreshToken.getToken());
+			}
+		}
+	}
+	
+	@Override
+	public void invalidateAllRefreshTokenChains(String refreshToken) {
+		var claims = parseJWT(refreshToken, jwtConfiguration.getRefreshTokenKey()).getBody();
+		var email = claims.getSubject();
+		refreshTokenRepository.deleteAllByEmail(email);
 	}
 	
 	private Optional<RefreshToken> validateRefreshToken(String token) throws RefreshTokenAlreadyUsedException {
@@ -131,6 +158,7 @@ public class JWTServiceImpl implements JWTService {
 		
 		return RefreshToken.builder()
 		                   .token(tokenString)
+		                   .email(userPrincipal.getEmail())
 		                   .expiration((long) jwtConfiguration.refreshTokenExpiration)
 		                   .build();
 	}
@@ -147,6 +175,8 @@ public class JWTServiceImpl implements JWTService {
 		
 		return RefreshToken.builder()
 		                   .token(tokenString)
+		                   .email(claims.getBody()
+		                                .getSubject())
 		                   .expiration((long) jwtConfiguration.refreshTokenExpiration)
 		                   .build();
 		
@@ -167,20 +197,4 @@ public class JWTServiceImpl implements JWTService {
 		                  .build();
 	}
 	
-	private void invalidateRefreshTokenChain(String token) {
-		var optionalRefreshToken = refreshTokenRepository.findById(token);
-		if (optionalRefreshToken.isEmpty()) {
-			return;
-		}
-		
-		// TODO: Test the correctness of the algorithm
-		var refreshToken = optionalRefreshToken.get();
-		while (refreshToken.getSuccessor() != null) {
-			var successor = refreshTokenRepository.findById(refreshToken.getSuccessor());
-			if (successor.isPresent()) {
-				refreshToken = successor.get();
-				refreshTokenRepository.delete(refreshToken);
-			}
-		}
-	}
 }
