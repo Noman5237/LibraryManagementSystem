@@ -159,10 +159,77 @@ services:
       retries: 3
       start_period: 2s
 
+  notification-service-db:
+    image: postgres:${NOTIFICATION_SERVICE_DB_VERSION}
+    environment:
+      POSTGRES_DB: ${NOTIFICATION_SERVICE_DB_NAME}
+      POSTGRES_USER: ${NOTIFICATION_SERVICE_DB_USER}
+      POSTGRES_PASSWORD: ${NOTIFICATION_SERVICE_DB_PASSWORD}
+    volumes:
+      - notification-service-db-data:/var/lib/postgresql/data
+    networks:
+      - lms-network
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 3s
+
+  ################################ Event Store Stream ################################
+
+  # scale to 3 for production
+  event-store-stream-config-service:
+    image: confluentinc/cp-zookeeper:7.3.2
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - event-store-stream-config-service-data:/var/lib/zookeeper
+    networks:
+      - lms-network
+
+  # scale to 3 for production
+  event-store-stream-message-broker:
+    image: confluentinc/cp-kafka:7.3.2
+    ports:
+      # To learn about configuring Kafka for access across networks see
+      # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
+      - "19092:19092"
+    depends_on:
+      - event-store-stream-config-service
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'event-store-stream-config-service:2181'
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://event-store-stream-message-broker:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - lms-network
+
+  # setup configuration files
+  event-store-stream-message-broker-ui:
+    image: provectuslabs/kafka-ui
+    ports:
+      - "8077:8080"
+    depends_on:
+      - event-store-stream-message-broker
+      - event-store-stream-config-service
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: event-store-stream-message-broker:9092
+    networks:
+      - lms-network
 
 volumes:
   user-management-service-db-data:
   auth-service-db-data:
+  notification-service-db-data:
+  event-store-stream-config-service-data:
 
 
 networks:

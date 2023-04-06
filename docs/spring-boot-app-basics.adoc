@@ -1,0 +1,107 @@
+== Springboot Application Basics
+
+== Why Springboot
+
+. Rapid development: Spring Boot provides a wide range of pre-built components and frameworks that can be easily integrated into your application, allowing you to quickly develop and deploy microservices.
+
+. Easy Configuration: Spring Boot simplifies the configuration of your microservices by providing an opinionated approach to configuration.
+This reduces the time required to configure and deploy your application.
+
+. Modular architecture: With Spring Boot, you can develop your microservices using a modular architecture, which makes it easy to break down complex applications into smaller, independent components.
+
+. Scalability: Spring Boot provides support for scaling microservices using cloud-native technologies such as Kubernetes and Docker.
+This makes it easy to scale your microservices up or down based on demand.
+
+. Community support: Spring Boot has a large and active community of developers who contribute to its development, provide support, and create third-party libraries and plugins.
+
+. Overall, Spring Boot is an excellent choice for building microservices due to its ease of use, modularity, scalability, and community support.
+
+== Basic Springboot Application: User Management Service
+
+To create a basic springboot application, we will create a user management service that will allow us to create, read, update, and delete users.
+
+By the end of this tutorial, you will have a basic understanding of how to create a springboot application and how to use the Spring Data JPA to interact with a database.
+
+=== Architecture
+
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+allow_mixing
+
+top to bottom direction
+skinparam linetype ortho
+
+class UserController {
+    - userService: UserService
+    - userActivationService: UserActivationService
+    + signup(SignupDto): User
+    + getSimpleUser(email): UserDto
+    + deleteUser(email): User
+    + activateUser(email): void
+    + suspendUser(email): void
+}
+
+package service {
+    interface UserService {
+        + signup(SignupDto): User
+        + getUser(email): UserDto
+        + deleteUser(email): User
+    }
+
+    interface UserActivationService {
+        + activateUser(email): void
+        + suspendUser(email): void
+    }
+
+    class UserServiceImpl implements UserService, UserActivationService {
+      - userRepository: UserRepository
+      + signUp(SignupDto): User
+      + deleteUser(email): User
+      + getUser(email): User
+      + activateUser(email): void
+      + suspendUser(String): void
+    }
+}
+
+UserController --> UserService
+UserController --> UserActivationService
+
+interface UserRepository {
+}
+
+UserServiceImpl --> UserRepository
+
+database "UserManagementServiceDB" {
+    package user {
+        enum AccountStatus << enumeration >> {
+          + SUSPENDED
+          + ACTIVE
+          + PENDING
+          + DELETED
+        }
+        enum UserRole << enumeration >> {
+          + FACULTY
+          + LIBRARY_SUPERVISOR
+          + STUDENT
+          + LIBRARIAN
+        }
+        class User {
+          - lastName: String
+          - dob: Date
+          - hashedPassword: String
+          - firstName: String
+          - userRole: UserRole
+          - email: String
+          - accountStatus: AccountStatus
+        }
+
+        User          "1" *--> "1" AccountStatus
+        User          "1" *--> "1" UserRole
+    }
+}
+
+UserRepository --> UserManagementServiceDB
+
+@enduml
+....
