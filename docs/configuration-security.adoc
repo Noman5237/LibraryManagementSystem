@@ -1,0 +1,8 @@
+== Configuration Profiles
+Configuration and profile management is currently now done in two steps:
+
+1. Application properties are loaded from the spring cloud config server
+
+2. The infrastructure configuration are loaded from environment variables which are securely stored in the infisical cloud vault
+
+The advantage of using infisical is that it is a open source secure vault which can be used in any cloud environment and can also be hosted in premise setup. It is also possible to use other vaults like Hashicorp Vault or AWS Secrets Manager. However the configuration of infisical is relatively simple and can be done in a few minutes.
