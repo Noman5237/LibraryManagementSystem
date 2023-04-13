@@ -1,0 +1,151 @@
+== User Management Service: Basic Springboot application
+
+To create a basic springboot application, we will create a user management service that will allow us to create, read, update, and delete users.
+
+By the end of this tutorial, you will have a basic understanding of how to create a springboot application and how to use the Spring Data JPA to interact with a database.
+
+=== Architecture
+
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+allow_mixing
+
+top to bottom direction
+skinparam linetype ortho
+
+class UserController {
+    - userService: UserService
+    - userActivationService: UserActivationService
+    + signup(SignupDto): User
+    + getUserPrincipal(request, strategy): UserPrincipalDto
+    + getSimpleUser(email): UserDto
+    + deleteUser(email): User
+    + activateUser(email): void
+    + suspendUser(email): void
+}
+
+package service {
+    interface UserService {
+        + signup(SignupDto): User
+        + getUser(email): UserDto
+        + deleteUser(email): User
+    }
+
+    interface UserActivationService {
+        + activateUser(email): void
+        + suspendUser(email): void
+    }
+
+    class UserServiceImpl implements UserService, UserActivationService {
+      - userRepository: UserRepository
+      + signUp(SignupDto): User
+      + deleteUser(email): User
+      + getUser(email): User
+      + activateUser(email): void
+      + suspendUser(String): void
+    }
+}
+
+UserController --> UserService
+UserController --> UserActivationService
+
+interface UserRepository {
+}
+
+UserServiceImpl --> UserRepository
+
+database "UserManagementServiceDB" {
+    package user {
+        enum AccountStatus << enumeration >> {
+          + SUSPENDED
+          + ACTIVE
+          + PENDING
+          + DELETED
+        }
+        enum UserRole << enumeration >> {
+          + FACULTY
+          + LIBRARY_SUPERVISOR
+          + STUDENT
+          + LIBRARIAN
+        }
+        class User {
+          - lastName: String
+          - dob: Date
+          - hashedPassword: String
+          - firstName: String
+          - userRole: UserRole
+          - email: String
+          - accountStatus: AccountStatus
+        }
+
+        User          "1" *--> "1" AccountStatus
+        User          "1" *--> "1" UserRole
+    }
+}
+
+package authentication {
+    enum AuthenticationStrategies << enumeration >> {
+      + LOCAL
+      + values(): AuthenticationStrategies[]
+    }
+
+    class AuthenticationStrategy {
+      # request: HttpServletRequest
+      + setRequest(HttpServletRequest): void
+      + getAuthenticatedUser(): User
+    }
+
+    class PasswordAuthenticationStrategy {
+      + getAuthenticatedUser(): User
+    }
+}
+
+UserRepository --> UserManagementServiceDB
+PasswordAuthenticationStrategy  --^  AuthenticationStrategy
+AuthenticationStrategies -- PasswordAuthenticationStrategy : uses >
+UserController ---> authentication: delegates to >
+
+@enduml
+....
+
+=== Authentication for User Principal Retrieval
+
+Authentication mechanism is implemented using strategy pattern for incorporating all kinds of dynamic mechanisms.
+
+For retrieving the user principal, the request has to complete the challenge against the requested strategy.
+
+Using this method, we can easily add new authentication strategies without modifying the existing implemented strategies.
+New strategies can be added by implementing the AuthenticationStrategy interface and adding the strategy to the AuthenticationStrategies enum.
+And for verifying the request, the strategy can dynamically allow any REST protocol to be used.
+
+*N.B. The user principal is not directly accessible by the end users, the authentication service forwards the requests to the user management service to retrieve the user principal.*
+
+=== Exception Handling
+
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+allow_mixing
+
+top to bottom direction
+skinparam linetype ortho
+
+class UserAlreadyExistsException {
+    + status: HttpStatus.CONFLICT
+    + message: User with email {email} already exists
+}
+
+class UserNotFoundException {
+    + status: HttpStatus.NOT_FOUND
+    + message: User with email {email} not found
+}
+
+@enduml
+....
+
+=== Important Dependencies
+
+* Eureka Client
+* Spring Boot Starter Validation: For validating the request body
+* Cloud Starter Config

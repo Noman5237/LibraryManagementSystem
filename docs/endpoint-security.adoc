@@ -1,0 +1,63 @@
+== Securing Endpoints
+
+Every route configured in the gateway is automatically assumed to be a private secure endpoint unless a special custom metadata 'public' is set to true.
+
+For accessing the secure endpoints, the gateway will require a valid JWT token to be passed in the Authorization header.
+The token can only be obtained by authenticating with the gateway's authentication service.
+The authentication service is a special endpoint that is configured in the gateway and is used to authenticate users and issue JWT tokens.
+
+=== Acquiring JWT Tokens
+
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+
+client -> auth: POST /authenticate/
+auth -> ums: POST /user/getUserPrincipal
+ums -> auth : UserPrincipal
+auth -> auth: Generate JWT tokens
+auth -> redis: Store refresh token
+auth -> client: JWT tokens
+
+@enduml
+....
+
+=== Rotating JWT Refresh Tokens
+Rotating refresh token is used to refresh the JWT token. The refresh token is valid for a lengthy amount of time. The refresh token is sent in the response of the authentication request. The refresh token can be used to get a new JWT token. The refresh token can be used only once to get a new JWT token. The refresh token is invalidated after it is used to get a new JWT token, and new refresh token is sent in the response of the authentication request.
+
+
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+
+client -> auth: POST /authenticate/refresh
+auth -> auth: validate refresh token
+auth -> redis: check refresh token validity
+auth -> redis: invalidate old refresh token
+auth -> auth: generate new refresh tokens
+auth -> redis: store new refresh token
+auth -> client: JWT tokens
+
+@enduml
+....
+
+==== Automatic reuse detection
+image::https://images.ctfassets.net/cdy7uua7fh8z/33fe73R81Cpm6eTmOWfAnm/e7d168edc27861507a121910b32f1ee2/reuse-detection1.png[Automatic reuse detection Scenario 1]
+
+image::https://images.ctfassets.net/cdy7uua7fh8z/36rAUgLOAqW7k7Fdl1eRN1/c1a57be5093416b50d42ec41a1e3a233/reuse-detection2.png[Automatic reuse detection Scenario 2]
+
+=== Accessing private endpoints
+
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+
+client -> gateway: GET /private/endpoint
+gateway -> auth: GET /authorize/check
+auth -> auth: validate JWT token
+auth -> gateway: return validity
+gateway -> service: request
+service -> gateway: response
+gateway -> client: response
+@enduml
+....
