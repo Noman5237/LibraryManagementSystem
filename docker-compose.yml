@@ -220,8 +220,8 @@ services:
       - event-store-stream-message-broker
       - event-store-stream-config-service
     environment:
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: event-store-stream-message-broker:9092
+        KAFKA_CLUSTERS_0_NAME: local-broker
+        KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: event-store-stream-message-broker:9092
     networks:
       - lms-network
 
