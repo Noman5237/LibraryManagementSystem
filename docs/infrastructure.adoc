@@ -1,0 +1,90 @@
+== Infrastructure
+
+The whole infrastructure is managed and simulated using docker containers. The docker-compose.yml file contains all the necessary information to start the whole infrastructure.
+
+=== High level overview
+
+==== Service
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+
+package "services" {
+    [discovery-service]
+    [config-service]
+    [gateway-service]
+    [auth-service]
+    [user-management-service]
+    [notification-service]
+
+    [discovery-service] -down-> [config-service]
+    [gateway-service] -down-> [config-service]
+    [auth-service] -down-> [config-service]
+    [user-management-service] -down-> [config-service]
+    [notification-service] -down-> [config-service]
+
+    [gateway-service] -down-> [auth-service]
+    [user-management-service] --> [auth-service]
+    [auth-service] --> [user-management-service]
+
+    ' every service is dependent on the discovery service
+    [config-service] -down-> [discovery-service]
+    [auth-service] -down-> [discovery-service]
+    [user-management-service] -down-> [discovery-service]
+    [gateway-service] -down-> [discovery-service]
+    [notification-service] -down-> [discovery-service]
+}
+
+@enduml
+....
+
+=== Database
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+
+package "services" {
+    [auth-service]
+    [user-management-service]
+}
+
+package "database" {
+    [user-management-service-db]
+    [auth-service-db]
+}
+
+[user-management-service] --> [user-management-service-db]
+[auth-service] --> [auth-service-db]
+
+@enduml
+....
+
+=== Event Store Stream
+[plantuml,target=diagram-classes,format=svg]
+....
+@startuml
+
+package "services" {
+    [discovery-service]
+    [config-service]
+    [user-management-service]
+    [notification-service]
+}
+
+package "event-store-stream" {
+    [event-store-stream-config-service]
+    [event-store-stream-message-broker-0]
+    [event-store-stream-message-broker-1]
+    [event-store-stream-message-broker-2]
+    Broker - [event-store-stream-message-broker-0]
+    Broker - [event-store-stream-message-broker-1]
+    Broker - [event-store-stream-message-broker-2]
+}
+
+[user-management-service] --> Broker
+[notification-service] --> Broker
+[config-service] --> Broker
+[discovery-service] --> Broker
+
+@enduml
+....
