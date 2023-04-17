@@ -7,7 +7,7 @@ services:
     volumes:
       - ./apps/discovery-service/build/libs/discovery-service.jar:/app/discovery-service.jar
     working_dir: /app
-    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5761 -Djava.security.egd=file:/dev/./urandom -jar discovery-service.jar
+    command: java -jar discovery-service.jar
     networks:
       - lms-network
     deploy:
@@ -16,7 +16,7 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 3
       start_period: 10s
 
   config-service:
@@ -27,7 +27,7 @@ services:
     environment:
       - eureka.client.serviceUrl.defaultZone=http://discovery-service:8761/eureka/
       - CLOUD_CONFIG_GITHUB_TOKEN
-    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5078 -Djava.security.egd=file:/dev/./urandom -jar config-service.jar
+    command: java -jar config-service.jar
     networks:
       - lms-network
     depends_on:
@@ -39,7 +39,7 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:8078/actuator/health" ]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 3
       start_period: 10s
 
   api-gateway:
@@ -51,7 +51,7 @@ services:
       - spring.cloud.config.enabled=true
       - spring.config.import=optional:configserver:http://config-service:8078
       - spring.profiles.active=dpe
-    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5079 -Djava.security.egd=file:/dev/./urandom -jar api-gateway.jar
+    command: java -jar api-gateway.jar
     networks:
       - lms-network
     depends_on:
@@ -74,7 +74,7 @@ services:
       - AUTH_SERVICE_DB_PASSWORD
       - AUTH_SERVICE_ACCESS_TOKEN_SECRET
       - AUTH_SERVICE_REFRESH_TOKEN_SECRET
-    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5082 -Djava.security.egd=file:/dev/./urandom -jar auth-service.jar
+    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5082 -Djava.security.egd=file:/dev/./urandom -jar auth-service.jar
     networks:
       - lms-network
     depends_on:
@@ -89,6 +89,7 @@ services:
     deploy:
       replicas: 1
 
+
   user-management-service:
     image: amazoncorretto:11
     volumes:
@@ -101,7 +102,7 @@ services:
       - USER_MANAGEMENT_SERVICE_DB_NAME
       - USER_MANAGEMENT_SERVICE_DB_USER
       - USER_MANAGEMENT_SERVICE_DB_PASSWORD
-    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5081 -Djava.security.egd=file:/dev/./urandom -jar user-management-service.jar
+    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5081 -Djava.security.egd=file:/dev/./urandom -jar user-management-service.jar
     networks:
       - lms-network
     depends_on:
@@ -117,7 +118,7 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:8081/api/actuator/health" ]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 3
       start_period: 10s
 
   ################################ DB ################################
@@ -138,7 +139,7 @@ services:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 3
       start_period: 3s
 
   auth-service-db:
@@ -156,7 +157,7 @@ services:
       test: [ "CMD-SHELL", 'redis-cli -a "$$AUTH_SERVICE_DB_PASSWORD" PING | grep PONG' ]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 3
       start_period: 2s
 
   notification-service-db:
@@ -175,7 +176,7 @@ services:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 3
       start_period: 3s
 
   ################################ Event Store Stream ################################
@@ -222,8 +223,8 @@ services:
       - event-store-stream-message-broker
       - event-store-stream-config-service
     environment:
-      KAFKA_CLUSTERS_0_NAME: local-broker
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: event-store-stream-message-broker:9092
+        KAFKA_CLUSTERS_0_NAME: local-broker
+        KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: event-store-stream-message-broker:9092
     networks:
       - lms-network
 
@@ -237,8 +238,3 @@ volumes:
 networks:
   lms-network:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: "192.168.137.0/24"
-          gateway: "192.168.137.1"
